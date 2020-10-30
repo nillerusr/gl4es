@@ -294,6 +294,7 @@ void GetHardwareExtensions(int notest)
         hardext.mirrored = 1;
     }
     S("GL_OES_mapbuffer ", mapbuffer, 0);
+    S("GL_EXT_sRGB ", srgbt, 1);
     S("GL_OES_element_index_uint ", elementuint, 1);
     S("GL_OES_packed_depth_stencil ", depthstencil, 1);
     S("GL_OES_depth24 ", depth24, 1);

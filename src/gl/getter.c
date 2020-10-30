@@ -131,6 +131,7 @@ void BuildExtensionsList() {
                 "GL_EXT_draw_elements_base_vertex "
                 "GL_ARB_map_buffer_range "
                 "GL_NV_blend_square "
+		"GL_EXT_texture_sRGB_decode "
 //                "GL_EXT_blend_logic_op "
 				);
         if(!globals4es.notexrect)

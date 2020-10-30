@@ -1109,4 +1109,6 @@ typedef struct __GLsync *GLsync;
 #define GL_MULTISAMPLE_BUFFER_BIT7_QCOM                         0x80000000
 #endif
 
+#define GL_FRAMEBUFFER_SRGB               0x8DB9
+
 #endif // _GL4ES_GLES_H_

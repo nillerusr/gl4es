@@ -1410,6 +1410,12 @@ void gl4es_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
     if(srcX1==srcX0 || srcY1==srcY0)
         return; // nothing to draw
 
+    LOAD_GLES(glIsEnabled);
+    LOAD_GLES(glEnable);
+    LOAD_GLES(glDisable);
+    GLboolean srgb = gles_glIsEnabled(GL_FRAMEBUFFER_SRGB);
+    if( srgb ) gles_glDisable(GL_FRAMEBUFFER_SRGB);
+
     GLuint texture = (glstate->fbo.fbo_read->id==0 && glstate->fbo.mainfbo_fbo)?glstate->fbo.mainfbo_tex:glstate->fbo.fbo_read->color[0];
 
     int created = (texture==0 || (glstate->fbo.fbo_read==glstate->fbo.fbo_draw));
@@ -1485,6 +1491,7 @@ void gl4es_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
     if(blitfullscreen)  // hack, force a swapbuffer (help wine d3d show stuff on certain games)
         gl4es_SwapBuffers_currentContext();
 #endif
+    if( srgb ) gles_glEnable(GL_FRAMEBUFFER_SRGB);
 }
 
 GLuint gl4es_getCurrentFBO() {

@@ -114,6 +114,10 @@ void internal2format_type(GLenum internalformat, GLenum *format, GLenum *type)
             *format = GL_LUMINANCE;
             *type = GL_UNSIGNED_BYTE;
             break;
+        case GL_SRGB_EXT:
+            break;
+        case GL_SRGB_ALPHA_EXT:
+            break;
         case 2:
         case GL_COMPRESSED_LUMINANCE_ALPHA:
         case GL_LUMINANCE8_ALPHA8:
@@ -306,6 +310,14 @@ static void *swizzle_texture(GLsizei width, GLsizei height,
                     check = 0;
                 }
                 break;
+	    case GL_SRGB_ALPHA_EXT:
+                convert = 0; check = 0;
+             dest_format = GL_SRGB_ALPHA_EXT;
+		break;
+	    case GL_SRGB_EXT:
+                convert = 0; check = 0;
+             dest_format = GL_SRGB_EXT;
+		break;
             // vvvvv all this are internal formats, so it should not happens
             case GL_RGB5:
             case GL_RGB565:
@@ -649,6 +661,13 @@ GLenum swizzle_internalformat(GLenum *internalformat, GLenum format, GLenum type
             ret = GL_COMPRESSED_RGB;
             sret = GL_RGB;
             break;
+	                case GL_SRGB_EXT:
+                        ret = GL_SRGB_EXT; sret = GL_SRGB_EXT;
+            break;
+                case GL_SRGB_ALPHA_EXT:
+                        ret = GL_SRGB_ALPHA_EXT; sret = GL_SRGB_ALPHA_EXT;
+                        break;
+
         case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:  // not good...
         case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:  // not good, but there is no DXT3 compressor
         case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
@@ -882,6 +901,8 @@ void gl4es_glTexImage2D(GLenum target, GLint level, GLint internalformat,
     LOAD_GLES(glTexImage2D);
     LOAD_GLES(glTexSubImage2D);
     LOAD_GLES(glTexParameteri);
+
+   GLenum backupformat = internalformat;
 
     if(globals4es.force16bits) {
         if(internalformat==GL_RGBA || internalformat==4 || internalformat==GL_RGBA8)
@@ -1402,10 +1423,15 @@ void gl4es_glTexImage2D(GLenum target, GLint level, GLint internalformat,
                 }
 #endif
             } else {
-                errorGL();
-                gles_glTexImage2D(rtarget, level, format, width, height, border,
-                                format, type, pixels);
-                DBG(CheckGLError(1);)
+                if( (backupformat == GL_SRGB_ALPHA_EXT || backupformat == GL_SRGB_EXT) && hardext.srgbt )
+                {
+                    format = backupformat;
+                    gles_glTexImage2D(rtarget, level, format, width, height, border, format, type, pixels);
+                }
+                else
+		{
+                    gles_glTexImage2D(rtarget, level, format, width, height, border, format, type, pixels);
+		}
             }
             // check if base_level is set... and calculate lower level mipmap
             if(bound->base_level == level && !(bound->max_level==level && level==0)) {

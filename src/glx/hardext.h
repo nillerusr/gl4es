@@ -38,6 +38,7 @@ typedef struct _hardext {
     int mirrored;       // GL_OES_texture_mirrored_repeat
     int aniso;          // Max ANISOTROPIC filter available (0 if not)
     int srgb;           // EGL_KHR_gl_colorspace
+    int srgbt;           // EGL_KHR_gl_colorspace
     int mapbuffer;      // GL_OES_mapbuffer
     int drawbuffers;    // GL_EXT_draw_buffers
     // es2 stuffs

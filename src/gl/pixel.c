@@ -1476,6 +1476,7 @@ bool pixel_to_ppm(const GLvoid *pixels, GLuint width, GLuint height,
 static uint8_t srgb_table[256] = {0};
 void pixel_srgb_inplace(GLvoid* pixels, GLuint width, GLuint height)
 {
+    return;
     if(!srgb_table[255]) {
         // create table
         for (int i=1; i<256; ++i) {
