@@ -1251,6 +1251,7 @@ char* ConvertShader(const char* pEntry, int isVertex, shaderconv_need_t *need)
   if((globals4es.dbgshaderconv&maskafter)==maskafter) {
     printf("New Shader source:\n%s\n", Tmp);
   }
+  snprintf(filename, sizeof (filename), "%s.gl4es", filename);
   FILE *shad = fopen(filename, "w+");
   fprintf(shad, Tmp);
   fclose(shad);
