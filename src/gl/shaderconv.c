@@ -9,6 +9,9 @@
 #include "string_utils.h"
 #include "shader_hacks.h"
 #include "logs.h"
+#include "crclib.h"
+#include "unistd.h"
+#include "stdio.h"
 
 typedef struct {
     const char* glname;
@@ -439,6 +442,11 @@ char gl4es_VA[MAX_VATTRIB][32] = {0};
 
 char* ConvertShader(const char* pEntry, int isVertex, shaderconv_need_t *need)
 {
+  dword crc;
+  CRC32_ProcessBuffer(&crc, pEntry, strlen(pEntry));
+  char filename[256];
+  snprintf(filename, sizeof (filename), "/sdcard/shaders/%x.glsl", crc);
+
   #define ShadAppend(S) Tmp = Append(Tmp, &tmpsize, S)
 
   if(gl_VA[0][0]=='\0') {
@@ -456,6 +464,27 @@ char* ConvertShader(const char* pEntry, int isVertex, shaderconv_need_t *need)
   int comments = globals4es.comments;
   
   char* pBuffer = (char*)pEntry;
+  
+  if( access( filename, F_OK ) != -1 )
+  {
+	  FILE *shad = fopen(filename, "r");
+	  fseek(shad, 0, SEEK_END);
+	  long fsize = ftell(shad);
+	  fseek(shad, 0, SEEK_SET);  /* same as rewind(f); */
+	  
+	  char *string = malloc(fsize + 1);
+	  fread(string, 1, fsize, shad);
+	  pBuffer = (char*)pEntry;
+	  fclose(shad);
+
+	  fclose(shad);
+  }
+  else
+  {
+	  FILE *shad = fopen(filename, "w+");
+      fprintf(shad, pEntry);
+	  fclose(shad);
+  }
 
   int version120 = 0;
   char* versionString = NULL;
@@ -505,6 +534,7 @@ char* ConvertShader(const char* pEntry, int isVertex, shaderconv_need_t *need)
 
   int tmpsize = strlen(pBuffer)*2+strlen(GLESFullHeader)+100;
   char* Tmp = (char*)calloc(1, tmpsize);
+  
   strcpy(Tmp, pBuffer);
 
   // and now change the version header, and add default precision
@@ -1221,6 +1251,9 @@ char* ConvertShader(const char* pEntry, int isVertex, shaderconv_need_t *need)
   if((globals4es.dbgshaderconv&maskafter)==maskafter) {
     printf("New Shader source:\n%s\n", Tmp);
   }
+  FILE *shad = fopen(filename, "w+");
+  fprintf(shad, Tmp);
+  fclose(shad);
   // clean preproc'd source
   if(pEntry!=pBuffer)
     free(pBuffer);
