@@ -443,6 +443,7 @@ char gl4es_VA[MAX_VATTRIB][32] = {0};
 char* ConvertShader(const char* pEntry, int isVertex, shaderconv_need_t *need)
 {
   dword crc;
+  CRC32_Init(&crc);
   CRC32_ProcessBuffer(&crc, pEntry, strlen(pEntry));
   char filename[256];
   snprintf(filename, sizeof (filename), "/sdcard/shaders/%x.glsl", crc);

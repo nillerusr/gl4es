@@ -22,6 +22,6 @@ typedef unsigned char byte;
 
 void CRC32_Init( dword *pulCRC );
 void CRC32_ProcessBuffer( dword *pulCRC, const void *pBuffer, int nBuffer );
-dword CRC32_Final( dword pulCRC );
+//dword CRC32_Final( dword pulCRC );
 
 #endif // CRCLIB_H

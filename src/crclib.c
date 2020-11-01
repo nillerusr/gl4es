@@ -18,6 +18,7 @@ GNU General Public License for more details.
 #include <stdlib.h>
 
 #define NUM_BYTES		256
+#define CRC32_INIT_VALUE        0xFFFFFFFFUL
 
 static const dword crc32table[NUM_BYTES] =
 {
@@ -86,6 +87,11 @@ static const dword crc32table[NUM_BYTES] =
 0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94,
 0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
+
+void CRC32_Init( dword *pulCRC )
+{
+	*pulCRC = CRC32_INIT_VALUE;
+}
 
 void CRC32_ProcessBuffer( dword *pulCRC, const void *pBuffer, int nBuffer )
 {
