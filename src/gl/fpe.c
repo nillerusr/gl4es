@@ -733,7 +733,7 @@ void fpe_glNormalPointer(GLenum type, GLsizei stride, const GLvoid *pointer) {
     glstate->vao->vertexattrib[ATT_NORMAL].stride = stride;
     glstate->vao->vertexattrib[ATT_NORMAL].pointer = pointer;
     glstate->vao->vertexattrib[ATT_NORMAL].divisor = 0;
-    glstate->vao->vertexattrib[ATT_NORMAL].normalized = GL_FALSE;
+    glstate->vao->vertexattrib[ATT_NORMAL].normalized = (type==GL_FLOAT)?GL_FALSE:GL_TRUE;
     glstate->vao->vertexattrib[ATT_NORMAL].real_buffer = 0;
     glstate->vao->vertexattrib[ATT_NORMAL].real_pointer = 0;
 }
@@ -804,6 +804,7 @@ void fpe_glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *i
         use_vbo = 1;
         bindBuffer(GL_ELEMENT_ARRAY_BUFFER, glstate->vao->elements->real_buffer);
         indices = (GLvoid*)((uintptr_t)indices - (uintptr_t)(glstate->vao->elements->data));
+        DBG(printf("Using VBO %d for indices\n", glstate->vao->elements->real_buffer);)
     }
     realize_bufferIndex();
     gles_glDrawElements(mode, count, type, indices);
@@ -1531,6 +1532,7 @@ void realize_blitenv(int alpha) {
         gles_glUseProgram(glstate->gleshard->program);
     }
     // set VertexAttrib if needed
+    unboundBuffers();
     for(int i=0; i<hardext.maxvattrib; i++) {
         vertexattrib_t *v = &glstate->gleshard->vertexattrib[i];
         // enable / disable Array if needed
@@ -1614,7 +1616,7 @@ void builtin_Init(program_t *glprogram) {
     for (int i=0; i<MAX_TEX; i++) {
         glprogram->builtin_texenvcolor[i] = -1;
         glprogram->builtin_texenvrgbscale[i] = -1;
-        glprogram->builtin_texenvrgbscale[i] = -1;
+        glprogram->builtin_texenvalphascale[i] = -1;
         for (int j=0; j<4; j++) {
             glprogram->builtin_eye[j][i] = -1;
             glprogram->builtin_obj[j][i] = -1;
